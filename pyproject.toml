@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "question-generator-api"
+version = "0.1.0"
+description = "FastAPI backend for question generation with Ollama"
+authors = ["bnurd <bnurd@example.com>"]
+package-mode = false
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "0.115.12"
+uvicorn = {version = "0.34.2", extras = ["standard"]}
+httpx = "0.28.1"
+pydantic = "2.11.4"
+
+[build-system]
+requires = ["poetry-core>=1.9.0"]
+build-backend = "poetry.core.masonry.api"
+
