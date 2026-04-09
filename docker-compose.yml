@@ -1,4 +1,21 @@
 services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres-db
+    environment:
+      - POSTGRES_USER=quiz_user
+      - POSTGRES_PASSWORD=quiz_password
+      - POSTGRES_DB=quiz_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quiz_user -d quiz_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    
   ollama:
     image: ollama/ollama:latest
     container_name: ollama
@@ -13,7 +30,7 @@ services:
       - ollama
     environment:
       - OLLAMA_HOST=http://ollama:11434
-      - OLLAMA_MODEL=llama3.2
+      - OLLAMA_MODEL=qwen2.5:0.5b
     entrypoint: ["/bin/sh", "-lc"]
     command: >
       'echo "Waiting for Ollama..." &&
@@ -31,10 +48,15 @@ services:
       - "8000:8000"
     environment:
       - OLLAMA_BASE_URL=http://ollama:11434
-      - OLLAMA_MODEL=llama3.2
+      - OLLAMA_MODEL=qwen2.5:0.5b
+      - DATABASE_URL=postgresql://quiz_user:quiz_password@postgres:5432/quiz_db
     depends_on:
-      - ollama
+      postgres:
+        condition: service_healthy
+      ollama:
+        condition: service_started
 
 volumes:
   ollama:
+  postgres_data:
 
